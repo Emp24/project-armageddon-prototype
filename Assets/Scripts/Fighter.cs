@@ -23,21 +23,7 @@ public class Fighter : MonoBehaviour
     public void Update()
     {
         //if distance between nearest enemy and player is less than max range, move towards nearest enemy
-        float distance = Vector2.Distance(nearestEnemyPosition.position, transform.position);
-        // Debug.Log("distance: " + distance);
-        if (distance >= 15f)
-        {
-            Movement(nearestEnemyPosition.position);
-        }
-        else
-        {
-            if (Time.time >= nextFireTime)
-            {
-                FireGun(gunPos, gameObject);
-                nextFireTime = Time.time + fireRate;
-            }
-        }
-
+        ScanSurrounding();
         Rotation(nearestEnemyPosition, transform);
     }
     public void Movement(Vector2 nearestEnemyPosition)
@@ -89,6 +75,35 @@ public class Fighter : MonoBehaviour
         // BulletProjectilePool.SharedInstance.ReturnToPool(bullet);
     }
 
+    public void ScanSurrounding()
+    {
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 100f, LayerMask.GetMask("Enemy"));
+        foreach (Collider2D collider in colliders)
+        {
+            //Get nearest enemy
+            //Move towards nearest enemy 
+            if (collider.gameObject != gameObject)
+            {
+                Debug.Log(collider.gameObject.name + " in range");
+                nearestEnemyPosition = collider.transform;
+                float distance = Vector2.Distance(nearestEnemyPosition.position, transform.position);
+                // Debug.Log("distance: " + distance);
+                if (distance >= 15f)
+                {
+                    Movement(nearestEnemyPosition.position);
+                }
+                else
+                {
+                    if (Time.time >= nextFireTime)
+                    {
+                        FireGun(gunPos, gameObject);
+                        nextFireTime = Time.time + fireRate;
+                    }
+                }
+            }
+        }
+
+    }
 }
 
 
@@ -97,16 +112,3 @@ public class Projectile : MonoBehaviour
     public float damage;
     public GameObject source;
 }
-//     public void ScanSurrounding()
-// {
-//     Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 5f, LayerMask.GetMask("Consumables"));
-//     foreach (Collider2D collider in colliders)
-//     {
-//         if (collider.gameObject != gameObject)
-//         {
-//             Debug.Log(collider.gameObject.name + " in range");
-//             SuckExpBlobs(collider.gameObject);
-//         }
-//     }
-
-// }
