@@ -19,12 +19,25 @@ public class Fighter : MonoBehaviour
     public GameObject bullet;
     public float nextFireTime;
     public float fireRate;
-
+    public string targetLayerName;
+    public float hp;
+    public float damage;
     public void Update()
     {
         //if distance between nearest enemy and player is less than max range, move towards nearest enemy
         ScanSurrounding();
         Rotation(nearestEnemyPosition, transform);
+    }
+
+    public void OnCollisionEnter2D(Collision2D collision)
+    {
+        Debug.Log("Collision");
+        string collidingObjectTag = collision.gameObject.tag;
+        string sourceTag = collision.gameObject.GetComponent<Projectile>().source.tag;
+        if (collidingObjectTag == "Projectile" && sourceTag != gameObject.tag)
+        {
+            TakeDamage(collision.gameObject.GetComponent<Projectile>().damage);
+        }
     }
     public void Movement(Vector2 nearestEnemyPosition)
     {
@@ -46,11 +59,11 @@ public class Fighter : MonoBehaviour
         // GameObject newBullet = BulletProjectilePool.SharedInstance.GetPooledObject();
         if (newBullet != null)
         {
-            // Projectile projectile = newBullet.GetComponent<Projectile>();
+            Projectile projectile = newBullet.GetComponent<Projectile>();
             //details can be injected from source
-            // projectile.damage = source.GetComponent<IDamageable>().damage;
-            // projectile.gameObject.layer = LayerMask.NameToLayer(source.GetComponent<IDamageable>().layer);
-            // projectile.source = source;
+            projectile.damage = damage;
+            projectile.targetLayerName = targetLayerName;
+            projectile.source = source;
             newBullet.transform.position = gunPos.position;
             newBullet.transform.rotation = gunPos.rotation;
             newBullet.SetActive(true);
@@ -77,7 +90,7 @@ public class Fighter : MonoBehaviour
 
     public void ScanSurrounding()
     {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 100f, LayerMask.GetMask("Enemy"));
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 100f, LayerMask.GetMask(targetLayerName));
         foreach (Collider2D collider in colliders)
         {
             //Get nearest enemy
@@ -104,11 +117,20 @@ public class Fighter : MonoBehaviour
         }
 
     }
+
+    public void TakeDamage(float damage)
+    {
+        hp -= damage;
+        if (hp <= 0)
+        {
+            Die();
+        }
+    }
+
+    public void Die()
+    {
+        gameObject.SetActive(false);
+    }
 }
 
 
-public class Projectile : MonoBehaviour
-{
-    public float damage;
-    public GameObject source;
-}
