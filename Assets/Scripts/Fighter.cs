@@ -22,7 +22,7 @@ public class Fighter : MonoBehaviour
     public string targetLayerName;
     public float hp;
     public float damage;
-    public void Update()
+    public void FixedUpdate()
     {
         //if distance between nearest enemy and player is less than max range, move towards nearest enemy
         ScanSurrounding();
@@ -90,7 +90,7 @@ public class Fighter : MonoBehaviour
 
     public void ScanSurrounding()
     {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 100f, LayerMask.GetMask(targetLayerName));
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 40f, LayerMask.GetMask(targetLayerName));
         foreach (Collider2D collider in colliders)
         {
             //Get nearest enemy
@@ -101,7 +101,7 @@ public class Fighter : MonoBehaviour
                 nearestEnemyPosition = collider.transform;
                 float distance = Vector2.Distance(nearestEnemyPosition.position, transform.position);
                 // Debug.Log("distance: " + distance);
-                if (distance >= 15f)
+                if (distance >= 5f)
                 {
                     Movement(nearestEnemyPosition.position);
                 }
