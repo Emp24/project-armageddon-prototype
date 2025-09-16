@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Fighter.cs" />
+    <Compile Include="Assets\Scripts\Placement\GridCell.cs" />
     <Compile Include="Assets\Scripts\CameraZoomController.cs" />
     <Compile Include="Assets\Scripts\Placement\GridPlacementSystem.cs" />
     <Compile Include="Assets\Scripts\Projectile.cs" />
